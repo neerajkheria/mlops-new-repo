@@ -8,14 +8,21 @@ phases:
       - echo "Installing dependencies..."
       - pip install --upgrade pip --break-system-packages
       - pip install -r requirements.txt --break-system-packages
-      - pip install pytest --break-system-packages
+      - pip install pytest pytest-cov flake8 --break-system-packages
   
   pre_build:
     commands:
-      - echo "Running tests..."
-      - python -m pytest tests/ || true
-      - echo "Linting code..."
+      - echo "Running linting..."
+      - flake8 app.py --max-line-length=120 --ignore=E501,W503 || true
+      
+      - echo "Running unit tests..."
+      - python -m pytest tests/test_api.py -v || true
+      - python -m pytest tests/test_model.py -v || true
+      
+      - echo "Checking code quality..."
       - python -m py_compile app.py
+      
+      - echo "Pre-build validation complete"
   
   build:
     commands:
@@ -26,11 +33,25 @@ phases:
       - cp appspec.yml build/
       - cp -r scripts build/
       - cp -r models build/
+      - cp -r tests build/ || true
+      
+      - echo "Creating build metadata..."
+      - |
+        cat > build/build_info.json << BUILD_EOF
+        {
+          "build_id": "${CODEBUILD_BUILD_ID}",
+          "build_number": "${CODEBUILD_BUILD_NUMBER}",
+          "source_version": "${CODEBUILD_RESOLVED_SOURCE_VERSION}",
+          "build_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "region": "${AWS_REGION}"
+        }
+        BUILD_EOF
       
   post_build:
     commands:
       - echo "Build completed successfully"
       - ls -la build/
+      - cat build/build_info.json
 
 artifacts:
   files:
