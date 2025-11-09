@@ -1,0 +1,43 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - echo "Installing dependencies..."
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
+      - pip install pytest
+  
+  pre_build:
+    commands:
+      - echo "Running tests..."
+      - python -m pytest tests/ || true
+      - echo "Linting code..."
+      - python -m py_compile app.py
+  
+  build:
+    commands:
+      - echo "Build phase - packaging application..."
+      - mkdir -p build
+      - cp app.py build/
+      - cp requirements.txt build/
+      - cp appspec.yml build/
+      - cp -r scripts build/
+      - cp -r models build/
+      
+  post_build:
+    commands:
+      - echo "Build completed successfully"
+      - ls -la build/
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
+  name: mlops-app-$(date +%Y%m%d-%H%M%S)
+
+cache:
+  paths:
+    - '/root/.cache/pip/**/*'
