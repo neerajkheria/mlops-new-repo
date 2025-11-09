@@ -6,9 +6,9 @@ phases:
       python: 3.11
     commands:
       - echo "Installing dependencies..."
-      - pip install --upgrade pip
-      - pip install -r requirements.txt
-      - pip install pytest
+      - pip install --upgrade pip --break-system-packages
+      - pip install -r requirements.txt --break-system-packages
+      - pip install pytest --break-system-packages
   
   pre_build:
     commands:
