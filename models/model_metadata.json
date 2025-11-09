@@ -1,0 +1,32 @@
+{
+  "model_name": "customer_churn_predictor",
+  "model_version": "1.0.0",
+  "created_at": "2025-11-09T13:31:21.668583",
+  "accuracy": 0.995,
+  "framework": "scikit-learn",
+  "features": [
+    "customer_age",
+    "account_balance",
+    "products_used",
+    "months_active",
+    "support_calls",
+    "transaction_count"
+  ],
+  "n_samples_train": 800,
+  "n_samples_test": 200,
+  "ai_insights": {
+    "key_features": [
+      "support_calls",
+      "products_used",
+      "account_balance"
+    ],
+    "feature_engineering": [
+      "Create a feature for 'average_transaction_value' by dividing account_balance by transaction_count.",
+      "Generate a binary feature indicating whether a customer has made more than a certain number of support_calls."
+    ],
+    "data_quality_notes": [
+      "Check for missing values in key features such as account_balance and support_calls.",
+      "Look for outliers in transaction_count and months_active that may skew the analysis."
+    ]
+  }
+}
